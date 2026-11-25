@@ -1,0 +1,11 @@
+# pnpm 工作区配置
+# 说明：显式放行这些依赖的安装脚本（electron/esbuild 需下载二进制，vue-demi 需写条件导出），
+# 否则 pnpm 会出于安全默认拦截，导致构建失败。
+onlyBuiltDependencies:
+  - electron
+  - esbuild
+  - vue-demi
+
+# 关闭 run 前依赖校验：避免每次 pnpm run 又触发一次 install 预检查（被拦截脚本会误报 exit 1）。
+# 二进制已通过手动 install.js 就位，无需重复校验。
+verifyDepsBeforeRun: false

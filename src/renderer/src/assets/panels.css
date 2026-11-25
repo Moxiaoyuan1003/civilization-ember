@@ -1,0 +1,189 @@
+/* ============================================================
+ * 设置页各面板的共享样式
+ * 说明：
+ * - AI / 转写 / 存储 / 账号 / 界面偏好 / 模块开关 六个面板都复用这里的排版，
+ *   保证"设置页长一个样"，各面板只写自己独有的部分。
+ * - 这里是全局样式（不加 scoped），因为多个组件共用同一批类名。
+ * ============================================================ */
+
+/* 面板外壳 */
+.panel {
+  max-width: 720px;
+}
+
+.panel__intro {
+  margin-bottom: 20px;
+}
+
+.panel__intro h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.panel__intro p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+/* 面板主体（表单区） */
+.panel__body {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 4px 16px;
+}
+
+/* 说明条（浅色提示） */
+.panel__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 10px 0;
+  padding: 8px 10px;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* 警示条（带左边框强调） */
+.panel__warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 14px 0;
+  padding: 11px 13px;
+  background: color-mix(in srgb, var(--warning) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warning) 28%, transparent);
+  border-radius: 9px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.panel__warning strong {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--text-primary);
+}
+
+/* ---------- 通用控件（ctl） ---------- */
+
+.ctl {
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 7px 10px;
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.ctl:focus {
+  border-color: color-mix(in srgb, var(--ember-500) 55%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ember-500) 16%, transparent);
+}
+
+.ctl--input {
+  width: 240px;
+  max-width: 100%;
+}
+
+.ctl--select {
+  min-width: 160px;
+  cursor: pointer;
+}
+
+/* ---------- 通用按钮 ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 7px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: color-mix(in srgb, var(--ember-500) 16%, transparent);
+  border-color: color-mix(in srgb, var(--ember-500) 45%, transparent);
+  color: var(--ember-300);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ember-500) 25%, transparent);
+  color: var(--ember-300);
+}
+
+.btn--danger {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+}
+
+/* ---------- 开关（toggle） ---------- */
+
+.toggle {
+  position: relative;
+  width: 38px;
+  height: 21px;
+  border-radius: 11px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition: all 0.18s;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: all 0.18s;
+}
+
+.toggle--on {
+  background: color-mix(in srgb, var(--ember-500) 35%, transparent);
+  border-color: color-mix(in srgb, var(--ember-500) 60%, transparent);
+}
+
+.toggle--on::after {
+  left: 19px;
+  background: var(--ember-400);
+}
