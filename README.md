@@ -7,7 +7,7 @@
 "怎么活下去、怎么造东西"整理成一张可查、可读、可学的知识网络，
 让断了代的人也能顺着链路一步步走下去：取火 → 木炭 → 冶铁 → 鼓风 → 机械传动 → 蒸汽机。
 
-![首页](docs/screenshots/dashboard.png)
+![技术树](docs/screenshots/tech-tree.png)
 
 ---
 
