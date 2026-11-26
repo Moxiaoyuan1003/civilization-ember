@@ -11,16 +11,25 @@ import { computed } from 'vue'
 import type { Carrier } from '@shared/types/carrier'
 import { carrierTypeMeta } from './carrierMeta'
 import { resolveCover } from '@/assets/covers'
+import { resolveAssetUrl } from '@/lib/objectUrl'
 
 const props = defineProps<{ carrier: Carrier }>()
 
 const meta = computed(() => carrierTypeMeta(props.carrier.type))
 
 /**
- * 封面源：优先本地注册表（assets/covers/index.ts），其次载体 coverUrl，
+ * 封面源，优先级：
+ * 1. `coverUrl` 里的对象地址（网页抓来的真封面图，object://<hash>）
+ * 2. 本地注册表（演示载体的打包封面）
+ * 3. 载体 coverUrl（普通 URL）
  * 都没有则为 undefined → 走占位封面。
  */
-const coverSrc = computed(() => resolveCover(props.carrier.id, props.carrier.coverUrl))
+const coverSrc = computed(() => {
+  const fromObject = resolveAssetUrl(props.carrier.coverUrl)
+  // 只有 object:// 才走 resolveAssetUrl；普通 URL 交给 resolveCover 的兜底
+  if (fromObject && fromObject.startsWith('ember-object://')) return fromObject
+  return resolveCover(props.carrier.id, fromObject)
+})
 </script>
 
 <template>

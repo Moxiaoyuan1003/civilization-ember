@@ -3,10 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- 安全基线：禁止渲染层加载外部脚本；媒体只放行本地文件(file:)与 https（不放行 http/内网） -->
+    <!--
+      安全基线：禁止渲染层加载外部脚本；媒体只放行本地文件(file:)、https 与库内对象协议。
+      ember-object: 是主进程注册的自定义协议（库里的原文件与网页图片都靠它引用），
+      见 src/main/storage/objectProtocol.ts —— 它只认内容哈希，页面看不到磁盘路径。
+    -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: file:; media-src 'self' blob: data: file: https:"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: file: ember-object:; media-src 'self' blob: data: file: ember-object: https:; connect-src 'self' ember-object:"
     />
     <title>文明火种 · Civilization Ember</title>
   </head>

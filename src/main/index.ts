@@ -1,8 +1,10 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { registerStorageIpc } from './storage/ipc'
+import { registerIngestIpc, getIngestService } from './storage/ingestIpc'
 import { closeStorage } from './storage/database'
 import { getDataPaths } from './storage/paths'
+import { registerObjectScheme, registerObjectProtocol } from './storage/objectProtocol'
 
 /**
  * 主窗口引用（保持全局，避免被垃圾回收提前关闭窗口）
@@ -20,6 +22,12 @@ let mainWindow: BrowserWindow | null = null
  * 显式命名后，无论怎么启动，数据永远在同一个目录。
  */
 app.setName('civilization-ember')
+
+/**
+ * 自建协议必须在 app ready 之前登记，否则 Chromium 不认
+ * （表现为 `<img src="ember-object://...">` 静默不显示，很难排查）。
+ */
+registerObjectScheme()
 
 /**
  * 创建应用主窗口
@@ -70,6 +78,10 @@ app.whenReady().then(() => {
   // 也不要因为库坏了整个应用打不开（用户至少还能导出/备份）。
   try {
     registerStorageIpc()
+    // 摄取与文档服务依赖同一个数据库连接，必须在存储之后注册
+    registerIngestIpc()
+    // 自定义协议：让页面能用 ember-object://media/<hash> 引用对象仓里的文件
+    registerObjectProtocol()
     // eslint-disable-next-line no-console
     console.log(`[storage] 数据目录：${getDataPaths().root}`)
   } catch (err) {
@@ -109,7 +121,10 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
 
-// 退出前关闭数据库连接：WASM 版不 close 会留下未落盘的写缓冲
+// 退出前关闭数据库连接：WASM 版不 close 会留下未落盘的写缓冲。
+// 同时停掉文件夹监视，避免退出过程中还在触发导入。
 app.on('will-quit', () => {
+  const ingest = getIngestService()
+  if (ingest) void ingest.watcher.stop()
   closeStorage()
 })

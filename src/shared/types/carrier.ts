@@ -43,7 +43,16 @@ export interface Carrier {
   tags: string[]
   /** 内容寻址哈希：去重与校验和的依据 */
   contentHash: string
-  /** 本地文件路径（网页为来源 URL） */
+  /**
+   * 对象仓里的内容哈希（第 9 期起真实入库的载体才有）。
+   *
+   * 为什么不直接存 filePath：
+   * 库要能整体备份、搬机器、上 NAS。存绝对路径一搬就全断，
+   * 存内容哈希则走到哪都能按 `objects/ab/cd/<hash>.<ext>` 找回来。
+   * 演示数据没有这个字段（它们的 filePath 是假的占位路径）。
+   */
+  objectHash?: string
+  /** 本地文件路径（网页为来源 URL）。真实入库的载体这里是空的，靠 objectHash 定位 */
   filePath?: string
   /** 网页来源 URL */
   sourceUrl?: string

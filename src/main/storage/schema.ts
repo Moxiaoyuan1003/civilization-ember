@@ -19,7 +19,7 @@
 import type { Database } from 'node-sqlite3-wasm'
 
 /** 当前数据库结构版本（每次改表结构都要 +1 并追加迁移） */
-export const SCHEMA_VERSION = 1
+export const SCHEMA_VERSION = 2
 
 /**
  * 迁移步骤表：数组下标即"目标版本号 - 1"。
@@ -179,6 +179,82 @@ const MIGRATIONS: string[][] = [
        created_at      TEXT NOT NULL
      )`,
     `CREATE INDEX IF NOT EXISTS idx_msg_conv ON messages(conversation_id)`
+  ],
+
+  // v2：第 9 期真摄取（原文件仓 + 摄取队列 + 网页图片）
+  [
+    /* ---- 内容寻址对象（原文件仓） ----
+       每一份真实入库的文件都在 objects/ 目录下按内容哈希存一份：
+       路径 objects/<hash 前2位>/<hash 3-4位>/<hash>.<扩展名>
+       同一份内容被导入两次只占一份磁盘，靠哈希天然去重。
+       这张表登记"库里有哪些对象"，refcount 不存字段而是实时数
+       carriers 里引用同一 content_hash 的记录数——省得维护计数器出错。 */
+    `CREATE TABLE IF NOT EXISTS objects (
+       hash       TEXT PRIMARY KEY,
+       size_bytes INTEGER NOT NULL,
+       mime       TEXT,
+       ext        TEXT,
+       created_at TEXT NOT NULL
+     )`,
+
+    /* ---- 载体附加资源（网页里的图片） ----
+       用户明确要求"网页也要保存照片"。
+       网页抓取时把正文图片一并下到对象仓，这里登记归属：
+       role='cover' 是封面候选（正文第一张够大的图），
+       role='inline' 是正文插图，按抓取顺序排。 */
+    `CREATE TABLE IF NOT EXISTS carrier_assets (
+       id         TEXT PRIMARY KEY,
+       carrier_id TEXT NOT NULL REFERENCES carriers(id) ON DELETE CASCADE,
+       hash       TEXT NOT NULL,
+       role       TEXT NOT NULL,
+       source_url TEXT,
+       created_at TEXT NOT NULL
+     )`,
+    `CREATE INDEX IF NOT EXISTS idx_assets_carrier ON carrier_assets(carrier_id)`,
+
+    /* ---- 正文文档（解析产物） ----
+       阅读器读的就是这张表：一本书/一篇网页解析完变成"页 + 目录"。
+       第 9 期先支持纯文本与网页，第 10 期接 PDF/EPUB 后仍写这张表，
+       所以页面渲染逻辑从这一期起就固定下来，后面只是"能解析更多格式"。 */
+    `CREATE TABLE IF NOT EXISTS documents (
+       carrier_id TEXT PRIMARY KEY REFERENCES carriers(id) ON DELETE CASCADE,
+       title      TEXT NOT NULL,
+       subtitle   TEXT,
+       pages      TEXT NOT NULL,
+       toc        TEXT NOT NULL,
+       created_at TEXT NOT NULL
+     )`,
+
+    /* ---- 载体 → 原文件对象哈希 ----
+       第 8 期 seed 的演示载体 file_path 是假路径、content_hash 是占位串。
+       真摄取进来的载体用 object_hash 指向 objects 表里的真实文件，
+       两者并存互不干扰（演示数据继续演示，真实数据走真路径）。 */
+    `ALTER TABLE carriers ADD COLUMN object_hash TEXT`,
+    `CREATE INDEX IF NOT EXISTS idx_carriers_object ON carriers(object_hash)`,
+
+    /* ---- 摄取任务队列（持久化） ----
+       第 8 期之前队列是内存 Mock，关掉就清空。
+       真实摄取可能跑几十分钟（转写大文件），队列必须落库：
+       应用崩了、用户关了窗口，重开还能看到"上次跑到哪一步"。 */
+    `CREATE TABLE IF NOT EXISTS ingest_tasks (
+       id             TEXT PRIMARY KEY,
+       carrier_id     TEXT NOT NULL,
+       carrier_title  TEXT NOT NULL,
+       carrier_type   TEXT NOT NULL,
+       status         TEXT NOT NULL,
+       stage          TEXT NOT NULL,
+       progress       REAL NOT NULL DEFAULT 0,
+       checkpoint     TEXT NOT NULL DEFAULT '[]',
+       skipped_stages TEXT NOT NULL DEFAULT '[]',
+       note           TEXT,
+       resumable      INTEGER NOT NULL DEFAULT 1,
+       attempts       INTEGER NOT NULL DEFAULT 0,
+       max_attempts   INTEGER NOT NULL DEFAULT 3,
+       last_error     TEXT,
+       created_at     TEXT NOT NULL,
+       updated_at     TEXT NOT NULL
+     )`,
+    `CREATE INDEX IF NOT EXISTS idx_ingest_status ON ingest_tasks(status, created_at DESC)`
   ]
 ]
 

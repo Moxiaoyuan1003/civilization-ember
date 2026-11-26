@@ -1,29 +1,29 @@
 /**
- * Mock 媒体来源解析（MediaService 的内存实现）。
+ * 媒体来源解析（MediaService 的实现）。
  *
- * 目前火种里只有两个音视频载体，它们的原片是按转写时间轴生成的演示素材，
- * 放在 renderer/public/media 下（打包后由 Vite 原样拷进产物）。
+ * 判断顺序（也就是"这个片子还在不在"的完整答案）：
  *
- * 真实实现（第 8 期接 Node 侧）会变成：
- * 1. 按 carrier.filePath 去 data 目录里找文件；
- * 2. 找到就返回 file:// 路径；
- * 3. 找不到但转写还在 → 返回 transcript-only，播放器退化成"文字时间轴"。
+ * 1. **载体带 objectHash** → 真入库的音视频，走 `ember-object://media/<hash>`。
+ *    这是第 9 期起真实导入的媒体，存在对象仓里，随库搬走。
+ * 2. **演示素材** → 一期用 ffmpeg+TTS 造的那两段，打包在产物里（顺手保留，
+ *    这样演示数据不依赖用户先导入东西）。
+ * 3. **都没有** → transcript-only，播放器退化成"文字时间轴"。
  *
- * 这里刻意保留了"找不到文件"这条分支，因为文明断层的世界里，
- * 「片子丢了、文字还在」是常态，不是异常。
+ * 第 3 条在文明断层的设定里是常态而非异常：片子丢了、话还在。
+ * 所以它不是错误状态，界面上要把它讲清楚，而不是显示"播放失败"。
  */
 
 import type { Carrier } from '@shared/types/carrier'
 import type { MediaSource } from '@shared/types/media'
 import type { MediaService } from '@/services/media'
+import { objectUrl } from '@/lib/objectUrl'
 
 /** 演示素材路径（相对 index.html，dev 与打包后都能取到） */
-const MEDIA_FILES: Record<string, string> = {
+const DEMO_MEDIA: Record<string, string> = {
   'c-video-fire': './media/fire-drilling.mp4',
   'c-audio-iron': './media/iron-oral-history.mp3'
 }
 
-/** 创建 Mock 媒体解析服务 */
 export function createMockMedia(): MediaService {
   return {
     async resolve(carrier: Carrier): Promise<MediaSource> {
@@ -38,10 +38,19 @@ export function createMockMedia(): MediaService {
         }
       }
 
-      const src = MEDIA_FILES[carrier.id]
+      // 1. 真实入库的媒体：对象仓里的文件
+      if (carrier.objectHash) {
+        return {
+          kind: 'local',
+          src: objectUrl(carrier.objectHash),
+          mediaType,
+          note: '原片已存入火种库，可直接播放。'
+        }
+      }
+
+      // 2. 演示素材
+      const src = DEMO_MEDIA[carrier.id]
       if (src) {
-        // 模拟一次"检查文件是否存在"的异步延迟
-        await new Promise((r) => setTimeout(r, 40))
         return {
           kind: 'local',
           src,
@@ -50,7 +59,7 @@ export function createMockMedia(): MediaService {
         }
       }
 
-      // 没有原片：只能靠转写文字
+      // 3. 没有原片：只能靠转写文字
       return {
         kind: 'transcript-only',
         mediaType,

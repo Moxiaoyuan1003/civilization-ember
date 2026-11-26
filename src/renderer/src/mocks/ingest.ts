@@ -152,6 +152,39 @@ export function createMockIngest(): IngestService {
         dedupSavedBytes: Math.round(originals * 0.03),
         byType
       }
+    },
+
+    /* ---------- 第 9 期新增：真导入（Mock 下不可用） ----------
+       这些能力必须碰文件系统，只有主进程能做到。
+       在没有桥接的环境（浏览器里预览）下如实报错，
+       而不是假装成功——假装成功会让用户以为书导进去了。 */
+
+    async pickFiles(): Promise<string[]> {
+      throw new Error('选择文件需要桌面应用环境（当前无主进程桥接）')
+    },
+
+    async importFiles(): Promise<never> {
+      throw new Error('导入文件需要桌面应用环境（当前无主进程桥接）')
+    },
+
+    async importUrl(): Promise<never> {
+      throw new Error('抓取网页需要桌面应用环境（当前无主进程桥接）')
+    },
+
+    async pickFolder(): Promise<string | null> {
+      throw new Error('选择文件夹需要桌面应用环境（当前无主进程桥接）')
+    },
+
+    async watchFolder(): Promise<never> {
+      throw new Error('监控文件夹需要桌面应用环境（当前无主进程桥接）')
+    },
+
+    async unwatchFolder(): Promise<void> {
+      // 没监视过，停止是无害的空操作
+    },
+
+    async getWatchedFolder(): Promise<string | null> {
+      return null
     }
   }
 }

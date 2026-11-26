@@ -20,6 +20,7 @@ import type { Annotation, Favorite, MasteryRecord, ReadingProgress, User, UserPr
 import type { ChatMessage, ChatRole, ChatMode, Conversation } from '@shared/types/chat'
 import type { Bookmark } from '@shared/types/book'
 import type { Citation } from '@shared/types/carrier'
+import type { IngestTask } from '@shared/types/ingest'
 
 /** SQLite 行的通用形状（列名 -> 基本值） */
 export type Row = Record<string, string | number | bigint | Uint8Array | null>
@@ -80,6 +81,7 @@ export function carrierFromRow(row: Row): Carrier {
     coverUrl: optStr(row.cover_url),
     tags: parseJson<string[]>(row.tags, []),
     contentHash: str(row.content_hash),
+    objectHash: optStr(row.object_hash),
     filePath: optStr(row.file_path),
     sourceUrl: optStr(row.source_url),
     status: str(row.status) as CarrierStatus,
@@ -102,6 +104,7 @@ export function carrierToParams(c: Carrier): Record<string, string | number | nu
     ':cover_url': c.coverUrl ?? null,
     ':tags': JSON.stringify(c.tags ?? []),
     ':content_hash': c.contentHash,
+    ':object_hash': c.objectHash ?? null,
     ':file_path': c.filePath ?? null,
     ':source_url': c.sourceUrl ?? null,
     ':status': c.status,
@@ -266,6 +269,52 @@ export function messageFromRow(row: Row): ChatMessage {
     content: str(row.content),
     citations: parseJson<Citation[] | undefined>(row.citations, undefined),
     createdAt: str(row.created_at)
+  }
+}
+
+/* ============================ 摄取任务 ============================ */
+
+/** ingest_tasks 表一行 -> IngestTask */
+export function ingestTaskFromRow(row: Row): IngestTask {
+  return {
+    id: str(row.id),
+    carrierId: str(row.carrier_id),
+    carrierTitle: str(row.carrier_title),
+    carrierType: str(row.carrier_type) as IngestTask['carrierType'],
+    status: str(row.status) as IngestTask['status'],
+    stage: str(row.stage) as IngestTask['stage'],
+    progress: Number(row.progress) || 0,
+    checkpoint: parseJson<IngestTask['checkpoint']>(row.checkpoint, []),
+    skippedStages: parseJson<IngestTask['skippedStages']>(row.skipped_stages, []),
+    note: optStr(row.note),
+    resumable: bool(row.resumable),
+    attempts: Number(row.attempts) || 0,
+    maxAttempts: Number(row.max_attempts) || 3,
+    lastError: optStr(row.last_error),
+    createdAt: str(row.created_at),
+    updatedAt: str(row.updated_at)
+  }
+}
+
+/** IngestTask -> 命名参数（写库用） */
+export function ingestTaskToParams(t: IngestTask): Record<string, string | number | null> {
+  return {
+    ':id': t.id,
+    ':carrier_id': t.carrierId,
+    ':carrier_title': t.carrierTitle,
+    ':carrier_type': t.carrierType,
+    ':status': t.status,
+    ':stage': t.stage,
+    ':progress': t.progress,
+    ':checkpoint': JSON.stringify(t.checkpoint),
+    ':skipped_stages': JSON.stringify(t.skippedStages),
+    ':note': t.note ?? null,
+    ':resumable': boolToInt(t.resumable),
+    ':attempts': t.attempts,
+    ':max_attempts': t.maxAttempts,
+    ':last_error': t.lastError ?? null,
+    ':created_at': t.createdAt,
+    ':updated_at': t.updatedAt
   }
 }
 

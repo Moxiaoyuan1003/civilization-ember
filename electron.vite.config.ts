@@ -21,13 +21,18 @@ const sharedAlias = {
  * - main   ：Electron 主进程（Node 环境）
  * - preload：预加载脚本（Node 环境，用 externalizeDepsPlugin 排除依赖）
  * - renderer：前端界面（浏览器环境，Vue + Tailwind）
+ *
+ * 关于 `exclude`：chokidar 6 是纯 ESM 包，而主进程产物是 CJS。
+ * 如果按默认策略"外部化"，产物里会变成 `require('chokidar')`，
+ * 运行时直接报 `ERR_REQUIRE_ESM`（应用连窗口都开不出来，只在 stderr 留一行）。
+ * 所以把它从外部化名单里排除，让 Vite 把它一起打成 CJS 内联进产物。
  */
 export default defineConfig({
   main: {
     resolve: {
       alias: sharedAlias
     },
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin({ exclude: ['chokidar'] })]
   },
   preload: {
     resolve: {

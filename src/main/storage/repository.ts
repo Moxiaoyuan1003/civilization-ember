@@ -26,7 +26,7 @@ import type {
   UserPreferences
 } from '@shared/types/user'
 import type { ChatMessage, Conversation } from '@shared/types/chat'
-import type { Bookmark } from '@shared/types/book'
+import type { Bookmark, DocPage } from '@shared/types/book'
 import { DEFAULT_PREFERENCES } from '@shared/types/user'
 import {
   annotationFromRow,
@@ -113,17 +113,18 @@ export class SqliteStorage implements StorageService {
     const p = carrierToParams(carrier)
     this.db.run(
       `INSERT INTO carriers (id, title, type, format, authors, description, size_bytes,
-                             duration_sec, cover_url, tags, content_hash, file_path,
-                             source_url, status, ingested_at, created_at)
+                             duration_sec, cover_url, tags, content_hash, object_hash,
+                             file_path, source_url, status, ingested_at, created_at)
        VALUES (:id, :title, :type, :format, :authors, :description, :size_bytes,
-               :duration_sec, :cover_url, :tags, :content_hash, :file_path,
-               :source_url, :status, :ingested_at, :created_at)
+               :duration_sec, :cover_url, :tags, :content_hash, :object_hash,
+               :file_path, :source_url, :status, :ingested_at, :created_at)
        ON CONFLICT(id) DO UPDATE SET
          title=excluded.title, type=excluded.type, format=excluded.format,
          authors=excluded.authors, description=excluded.description,
          size_bytes=excluded.size_bytes, duration_sec=excluded.duration_sec,
          cover_url=excluded.cover_url, tags=excluded.tags,
-         content_hash=excluded.content_hash, file_path=excluded.file_path,
+         content_hash=excluded.content_hash, object_hash=excluded.object_hash,
+         file_path=excluded.file_path,
          source_url=excluded.source_url, status=excluded.status,
          ingested_at=excluded.ingested_at`,
       p
@@ -178,6 +179,33 @@ export class SqliteStorage implements StorageService {
             source: 'fulltext'
           })
           break // 同一载体只报第一条命中的时间段，避免刷屏
+        }
+      }
+    }
+
+    // 正文命中：第 9 期导入的书已经解析进 documents 表了，
+    // 搜不到正文等于"导进来的书只能看不能查"，所以这里顺手把正文也搜了。
+    //
+    // 现在是朴素的子串扫描（把整页正文读出来 `includes`），
+    // 几千页的书会变慢——第 12 期换成 bigram 倒排 + BM25 时这段会被替掉。
+    // 先用能跑的实现占位，比"搜不到自己刚导进去的内容"强。
+    const docs = this.db.all(`SELECT carrier_id, pages FROM documents`) as Row[]
+    for (const dRow of docs) {
+      const carrierId = String(dRow.carrier_id ?? '')
+      const carrierRow = this.db.get(`SELECT * FROM carriers WHERE id = ?`, [carrierId]) as Row | null
+      if (!carrierRow) continue
+      const pages = rowHelpers.parseJson<DocPage[]>(String(dRow.pages ?? '[]'), [])
+      for (const page of pages) {
+        const hitPara = page.paragraphs.find((p) => p.toLowerCase().includes(q.toLowerCase()))
+        if (hitPara) {
+          hits.push({
+            carrierId,
+            location: `P${page.pageNo}`,
+            snippet: hitPara,
+            score: 0.8,
+            source: 'fulltext'
+          })
+          break // 同一载体只报第一处命中，避免一本书刷满结果列表
         }
       }
     }

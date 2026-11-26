@@ -35,7 +35,25 @@ const api = {
     method: string,
     args: unknown[]
   ): Promise<{ ok: true; data: unknown } | { ok: false; error: string }> =>
-    ipcRenderer.invoke('storage:invoke', method, args)
+    ipcRenderer.invoke('storage:invoke', method, args),
+  /**
+   * 调用主进程摄取服务的一个方法（选文件/导入/抓网页/监控目录）。
+   * 同样走"单通道 + 方法名分发"，白名单在主进程校验。
+   */
+  ingestInvoke: (
+    method: string,
+    args: unknown[]
+  ): Promise<{ ok: true; data: unknown } | { ok: false; error: string }> =>
+    ipcRenderer.invoke('ingest:invoke', method, args),
+  /**
+   * 调用主进程文档服务（阅读器取正文）。
+   * 第 9 期起正文来自真实解析产物，不再是渲染层里的假数据。
+   */
+  documentInvoke: (
+    method: string,
+    args: unknown[]
+  ): Promise<{ ok: true; data: unknown } | { ok: false; error: string }> =>
+    ipcRenderer.invoke('document:invoke', method, args)
 }
 
 contextBridge.exposeInMainWorld('ember', api)

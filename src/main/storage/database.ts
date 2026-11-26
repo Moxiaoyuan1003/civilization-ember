@@ -32,6 +32,7 @@ import {
   mockUser
 } from '@shared/seed/user'
 import { mockConversations, mockMessages } from '@shared/seed/chat'
+import { mockBookDocs } from '@shared/seed/documents'
 import type { Carrier } from '@shared/types/carrier'
 
 /** 单例：主进程里只开一个数据库连接（WASM 版不支持多连接同库） */
@@ -58,6 +59,10 @@ export function getStorage(): { db: Database; storage: SqliteStorage } {
     seedDatabase(database)
     // eslint-disable-next-line no-console
     console.log(`[storage] 首次启动，已写入种子数据：${paths.dbFile}`)
+  } else {
+    // 老库升级：第 9 期新增了 documents 表，演示书的正文要补进去，
+    // 否则用户升级后打开阅读器会看到"还没解析出正文"，以为功能坏了。
+    seedDocumentsIfEmpty(database)
   }
 
   db = database
@@ -70,6 +75,42 @@ export function closeStorage(): void {
   if (db?.isOpen) db.close()
   db = null
   storage = null
+}
+
+/**
+ * 老库升级：documents 表是第 9 期新增的，演示书的正文要补进去。
+ *
+ * 只在**表里一条都没有**时补，绝不覆盖用户已有的解析结果。
+ * 这样第 8 期建的库升级到第 9 期后，阅读器立刻能读到那三本演示书。
+ */
+function seedDocumentsIfEmpty(database: Database): void {
+  const row = database.get(`SELECT COUNT(*) AS n FROM documents`) as { n: number } | null
+  if ((Number(row?.n) || 0) > 0) return
+  const now = new Date().toISOString()
+  database.exec('BEGIN')
+  try {
+    for (const doc of mockBookDocs) {
+      database.run(
+        `INSERT INTO documents (carrier_id, title, subtitle, pages, toc, created_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          doc.carrierId,
+          doc.title,
+          doc.subtitle ?? null,
+          JSON.stringify(doc.pages),
+          JSON.stringify(doc.toc),
+          now
+        ]
+      )
+    }
+    database.exec('COMMIT')
+    // eslint-disable-next-line no-console
+    console.log(`[storage] 已为老库补齐演示书正文：${mockBookDocs.length} 本`)
+  } catch (err) {
+    database.exec('ROLLBACK')
+    // eslint-disable-next-line no-console
+    console.error('[storage] 补齐演示正文失败（不影响其它功能）：', err)
+  }
 }
 
 /**
@@ -191,6 +232,25 @@ function seedDatabase(database: Database): void {
           m.content,
           m.citations ? JSON.stringify(m.citations) : null,
           m.createdAt
+        ]
+      )
+    }
+
+    /* ---- 正文文档 ----
+       第 9 期起阅读器读的是 documents 表（真解析产物），
+       不再从渲染层的假数据里取。演示书的三本正文也一并落库，
+       这样首次启动打开阅读器就能读到真内容，不是空白。 */
+    for (const doc of mockBookDocs) {
+      database.run(
+        `INSERT INTO documents (carrier_id, title, subtitle, pages, toc, created_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          doc.carrierId,
+          doc.title,
+          doc.subtitle ?? null,
+          JSON.stringify(doc.pages),
+          JSON.stringify(doc.toc),
+          now
         ]
       )
     }
