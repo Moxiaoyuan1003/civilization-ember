@@ -6,7 +6,7 @@
  */
 
 import type { AiService, StreamCallback } from '@/services/ai'
-import type { AiContext, ChatMode, ChatMessage } from '@/types/chat'
+import type { AiContext, ChatMode, ChatMessage } from '@shared/types/chat'
 
 /** 延迟一小段再逐段返回，模拟真实流式节奏 */
 function delay(ms: number): Promise<void> {

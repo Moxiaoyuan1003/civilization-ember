@@ -10,7 +10,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useDashboardStore } from '@/stores/dashboard'
-import { layerOf } from '@/types/layer'
+import { layerOf } from '@shared/types/layer'
 import DashboardCard from './DashboardCard.vue'
 import { Network } from 'lucide-vue-next'
 

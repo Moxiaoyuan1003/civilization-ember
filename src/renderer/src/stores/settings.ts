@@ -11,10 +11,10 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useServices } from '@/services'
-import type { AppSettings } from '@/types/settings'
-import { DEFAULT_APP_SETTINGS } from '@/types/settings'
-import type { User, UserPreferences } from '@/types/user'
-import { DEFAULT_PREFERENCES } from '@/types/user'
+import type { AppSettings } from '@shared/types/settings'
+import { DEFAULT_APP_SETTINGS } from '@shared/types/settings'
+import type { User, UserPreferences } from '@shared/types/user'
+import { DEFAULT_PREFERENCES } from '@shared/types/user'
 import { useThemeStore } from './theme'
 
 /** 设置页的分组页签 id */

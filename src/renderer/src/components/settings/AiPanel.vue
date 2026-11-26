@@ -14,7 +14,7 @@
 import { computed } from 'vue'
 import { Check, Loader2, AlertCircle, KeyRound, Info } from 'lucide-vue-next'
 import { useSettingsStore } from '@/stores/settings'
-import { AI_PROVIDERS } from '@/types/settings'
+import { AI_PROVIDERS } from '@shared/types/settings'
 import SettingField from './SettingField.vue'
 
 const store = useSettingsStore()

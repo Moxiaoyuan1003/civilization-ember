@@ -9,7 +9,7 @@
  * 这里只是渲染层查询/触发转写的入口。
  */
 
-import type { Transcript } from '@/types/carrier'
+import type { Transcript } from '@shared/types/carrier'
 
 export interface TranscriptionService {
   /**

@@ -5,7 +5,7 @@
  * 取火（L0）→ 冶铁（L1）→ 蒸汽机（L3），每个节点都有引用载体支撑。
  */
 
-import type { Carrier, Transcript } from '@/types/carrier'
+import type { Carrier, Transcript } from '@shared/types/carrier'
 
 /** Mock 载体列表 */
 export const mockCarriers: Carrier[] = [

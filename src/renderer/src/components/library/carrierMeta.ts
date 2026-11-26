@@ -7,7 +7,7 @@
 
 import { BookOpen, Video, Headphones, Image, Globe } from 'lucide-vue-next'
 import type { Component } from 'vue'
-import type { CarrierType } from '@/types/carrier'
+import type { CarrierType } from '@shared/types/carrier'
 
 /** 载体类型的展示元信息 */
 export interface CarrierTypeMeta {

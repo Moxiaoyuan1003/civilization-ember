@@ -6,7 +6,7 @@
  * 与个人偏好（数据库里的 per-user 行）分开存。
  */
 
-import type { AppSettings } from '@/types/settings'
+import type { AppSettings } from '@shared/types/settings'
 
 export interface SettingsService {
   /** 读取整机设置（无则返回默认值） */

@@ -11,7 +11,7 @@
  */
 
 import type { IngestService } from '@/services/ingest'
-import type { IngestTask, StorageStats, IngestStage } from '@/types/ingest'
+import type { IngestTask, StorageStats, IngestStage } from '@shared/types/ingest'
 import { mockIngestTasks } from '@/mocks/data'
 import { mockCarriers } from '@/mocks/data'
 

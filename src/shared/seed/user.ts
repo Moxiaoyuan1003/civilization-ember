@@ -5,10 +5,10 @@
  * 这是"每个用户/设备各一份"的落点。
  */
 
-import type { User, UserPreferences, ReadingProgress, Annotation, MasteryRecord, Favorite } from '@/types/user'
-import { DEFAULT_PREFERENCES } from '@/types/user'
-import type { LayoutPreset } from '@/types/layout'
-import type { Bookmark } from '@/types/book'
+import type { User, UserPreferences, ReadingProgress, Annotation, MasteryRecord, Favorite } from '@shared/types/user'
+import { DEFAULT_PREFERENCES } from '@shared/types/user'
+import type { LayoutPreset } from '@shared/types/layout'
+import type { Bookmark } from '@shared/types/book'
 
 /** Mock 当前用户（单机单用户场景，后续接多用户再扩展） */
 export const mockUser: User = {
@@ -22,24 +22,31 @@ export const mockPreferences: UserPreferences = {
   ...DEFAULT_PREFERENCES,
   userId: 'u-local'
 }
-/** Mock 阅读进度（示例：已读到冶金原理 65%） */
+/**
+ * Mock 阅读进度（示例：冶金原理读到第 4 页 / 6 页）。
+ *
+ * 注意 position 与 percent 必须和 `@shared/seed/documents` 里那本书的实际页数一致：
+ * 第 8 期之前这里写的是「P180 / 65%」，但演示用的那本书只有 6 页，
+ * 阅读器恢复进度时会把超范围的页码夹回第 1 页，首页于是显示「P1 · 17%」——
+ * 数据自相矛盾。演示数据也该是自洽的，否则排查真问题时会被它误导。
+ */
 export const mockReadingProgress: ReadingProgress[] = [
   {
     carrierId: 'c-book-metallurgy',
     userId: 'u-local',
-    position: 'P180',
-    percent: 0.65,
+    position: 'P4',
+    percent: 0.67,
     updatedAt: '2026-02-01T10:00:00Z'
   }
 ]
 
-/** Mock 标注（示例：冶金原理里一条淬火划线） */
+/** Mock 标注（示例：冶金原理第 4 页"淬火让铁变硬"那段的一条划线） */
 export const mockAnnotations: Annotation[] = [
   {
     id: 'a1',
     carrierId: 'c-book-metallurgy',
     userId: 'u-local',
-    location: 'P156',
+    location: 'P4',
     kind: 'highlight',
     text: '淬火温度需达到临界点以上，冷却速度决定硬度。',
     createdAt: '2026-02-01T10:05:00Z'

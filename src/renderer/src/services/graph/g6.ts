@@ -17,9 +17,9 @@
 
 import { Graph, NodeEvent } from '@antv/g6'
 import type { GraphService, GraphEventMap, GraphRenderOptions } from '@/services/graph'
-import type { TechTree, TechNode } from '@/types/techTree'
-import type { NodePosition } from '@/types/layout'
-import { prerequisiteChain } from '@/types/techTree'
+import type { TechTree, TechNode } from '@shared/types/techTree'
+import type { NodePosition } from '@shared/types/layout'
+import { prerequisiteChain } from '@shared/types/techTree'
 import { nodeColor, readCssVar } from '@/lib/color'
 
 /** 节点尺寸（矩形，宽 x 高） */

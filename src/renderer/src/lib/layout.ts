@@ -10,8 +10,8 @@
  *   是两回事：这里用 depth 做主纵轴，保证"取火→木炭→冶铁→蒸汽机"严格自上而下。
  */
 
-import type { TechTree, TechNode, TechEdge } from '@/types/techTree'
-import type { NodePosition } from '@/types/layout'
+import type { TechTree, TechNode, TechEdge } from '@shared/types/techTree'
+import type { NodePosition } from '@shared/types/layout'
 
 /** 纵向层间距（像素） */
 const LAYER_GAP_Y = 140

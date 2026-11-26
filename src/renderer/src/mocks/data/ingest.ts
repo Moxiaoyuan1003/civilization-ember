@@ -9,7 +9,7 @@
  * - 一个已完成
  */
 
-import type { IngestTask } from '@/types/ingest'
+import type { IngestTask } from '@shared/types/ingest'
 
 /** Mock 摄取任务列表 */
 export const mockIngestTasks: IngestTask[] = [

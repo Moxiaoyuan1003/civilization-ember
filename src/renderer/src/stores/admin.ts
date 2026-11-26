@@ -12,7 +12,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useServices } from '@/services'
-import type { IngestTask, IngestStatus, StorageStats } from '@/types/ingest'
+import type { IngestTask, IngestStatus, StorageStats } from '@shared/types/ingest'
 
 export const useAdminStore = defineStore('admin', () => {
   /* ---------- 状态 ---------- */

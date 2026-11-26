@@ -15,7 +15,7 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useLibraryStore } from '@/stores/library'
 import { useServices } from '@/services'
-import type { Carrier, CarrierType } from '@/types/carrier'
+import type { Carrier, CarrierType } from '@shared/types/carrier'
 import { X, FilePlus, Link, FolderInput } from 'lucide-vue-next'
 
 const store = useLibraryStore()

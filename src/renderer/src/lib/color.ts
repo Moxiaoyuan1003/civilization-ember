@@ -9,7 +9,7 @@
  * 需要运行时从根节点读出当前主题下的实际色值）。
  */
 
-import { layerOf } from '@/types/layer'
+import { layerOf } from '@shared/types/layer'
 
 /** 配色方案 */
 export type TechTreeColorScheme = 'layer' | 'ember'

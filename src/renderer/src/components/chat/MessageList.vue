@@ -17,7 +17,7 @@ import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useChatStore } from '@/stores/chat'
 import { carrierTypeMeta } from '@/components/library/carrierMeta'
-import type { Citation } from '@/types/carrier'
+import type { Citation } from '@shared/types/carrier'
 import { User, Sparkles } from 'lucide-vue-next'
 
 const store = useChatStore()

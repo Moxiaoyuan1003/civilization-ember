@@ -15,7 +15,7 @@ import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useLibraryStore } from '@/stores/library'
-import type { CarrierSort, CarrierType } from '@/types/carrier'
+import type { CarrierSort, CarrierType } from '@shared/types/carrier'
 import { CARRIER_TYPES, carrierTypeMeta } from './carrierMeta'
 import { Search, Upload, LayoutGrid, List } from 'lucide-vue-next'
 

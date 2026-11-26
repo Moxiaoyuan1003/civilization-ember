@@ -15,12 +15,12 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useServices } from '@/services'
 import { detectGaps } from '@/lib/gaps'
-import { LAYERS } from '@/types/layer'
-import type { TechTree, TechNode, TechGap } from '@/types/techTree'
-import type { Carrier, CarrierStatus } from '@/types/carrier'
-import type { User, UserPreferences, ReadingProgress, MasteryRecord, Favorite } from '@/types/user'
-import type { Conversation } from '@/types/chat'
-import { DEFAULT_PREFERENCES } from '@/types/user'
+import { LAYERS } from '@shared/types/layer'
+import type { TechTree, TechNode, TechGap } from '@shared/types/techTree'
+import type { Carrier, CarrierStatus } from '@shared/types/carrier'
+import type { User, UserPreferences, ReadingProgress, MasteryRecord, Favorite } from '@shared/types/user'
+import type { Conversation } from '@shared/types/chat'
+import { DEFAULT_PREFERENCES } from '@shared/types/user'
 
 /** 首页卡片 id 列表（默认顺序） */
 export const DASHBOARD_CARDS = [

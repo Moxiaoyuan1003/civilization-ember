@@ -13,7 +13,7 @@
 import { computed } from 'vue'
 import { Star, Highlighter, BookOpenCheck, Info, ToggleLeft } from 'lucide-vue-next'
 import { useSettingsStore } from '@/stores/settings'
-import type { UserPreferences } from '@/types/user'
+import type { UserPreferences } from '@shared/types/user'
 
 const store = useSettingsStore()
 

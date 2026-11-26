@@ -12,9 +12,9 @@
 import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useServices } from '@/services'
-import type { BookDoc, Bookmark, ReadingMode } from '@/types/book'
-import type { Annotation, User, UserPreferences } from '@/types/user'
-import type { Carrier } from '@/types/carrier'
+import type { BookDoc, Bookmark, ReadingMode } from '@shared/types/book'
+import type { Annotation, User, UserPreferences } from '@shared/types/user'
+import type { Carrier } from '@shared/types/carrier'
 
 /** 字号档位（阅读器的"可读性"核心，用户强调阅读功能很重要） */
 export const FONT_SIZES = [15, 16, 17, 18, 20, 22] as const

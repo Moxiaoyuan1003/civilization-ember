@@ -15,10 +15,10 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useServices } from '@/services'
-import type { ChatMessage, Conversation, ChatMode, AiContext } from '@/types/chat'
-import type { User, UserPreferences } from '@/types/user'
-import type { Carrier, Citation } from '@/types/carrier'
-import { DEFAULT_PREFERENCES } from '@/types/user'
+import type { ChatMessage, Conversation, ChatMode, AiContext } from '@shared/types/chat'
+import type { User, UserPreferences } from '@shared/types/user'
+import type { Carrier, Citation } from '@shared/types/carrier'
+import { DEFAULT_PREFERENCES } from '@shared/types/user'
 
 /** 生成一个带前缀的本地唯一 id（Mock 阶段够用，真实后端会换 uuid） */
 function genId(prefix: string): string {

@@ -6,8 +6,8 @@
  */
 
 import type { DocumentService } from '@/services/document'
-import type { BookDoc } from '@/types/book'
-import { findMockBookDoc } from '@/mocks/data/documents'
+import type { BookDoc } from '@shared/types/book'
+import { findMockBookDoc } from '@shared/seed/documents'
 
 export function createMockDocument(): DocumentService {
   return {

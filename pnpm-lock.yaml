@@ -17,6 +17,9 @@ importers:
       lucide-vue-next:
         specifier: ^0.468.0
         version: 0.468.0(vue@3.5.46(typescript@5.9.3))
+      node-sqlite3-wasm:
+        specifier: ^0.8.61
+        version: 0.8.61
       pinia:
         specifier: ^2.3.0
         version: 2.3.1(typescript@5.9.3)(vue@3.5.46(typescript@5.9.3))
@@ -1304,6 +1307,9 @@ packages:
   node-releases@2.0.65:
     resolution: {integrity: sha512-PfvofsGQ+MiOQIPkX9fU8ELUWmy5zL74CdQaph/ismKszfFkfwXaw0cGiwbwym2hT9k5+mdyl8O5WQ1MD8EHmA==}
     engines: {node: '>=18'}
+
+  node-sqlite3-wasm@0.8.61:
+    resolution: {integrity: sha512-Yqp6mz/CqmoUU4dCQOda9KtxC0+ToDX2w7p9/bv0hwaIXNbcGiGnfrkzE22reefoBvB1gYAUpJImsf0L7NQ9wg==}
 
   normalize-url@6.1.0:
     resolution: {integrity: sha512-DlL+XwOy3NxAQ8xuC0okPgK46iuVNAK01YN7RueYBqqFeGsBjV9XmCAzAdgt+667bCl5kPh9EqKKDwnaPG1I7A==}
@@ -2768,6 +2774,8 @@ snapshots:
   nanoid@3.3.20: {}
 
   node-releases@2.0.65: {}
+
+  node-sqlite3-wasm@0.8.61: {}
 
   normalize-url@6.1.0: {}
 

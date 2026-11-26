@@ -10,7 +10,7 @@
  * - 存储占用统计。
  */
 
-import type { IngestTask, StorageStats } from '@/types/ingest'
+import type { IngestTask, StorageStats } from '@shared/types/ingest'
 
 export interface IngestService {
   /** 列出全部摄取任务（按创建时间倒序） */

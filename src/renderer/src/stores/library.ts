@@ -12,10 +12,10 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useServices } from '@/services'
-import type { Carrier, CarrierType, CarrierSort, SearchHit } from '@/types/carrier'
-import type { User, UserPreferences, Favorite, ReadingProgress } from '@/types/user'
-import type { TechTree, TechNode } from '@/types/techTree'
-import { DEFAULT_PREFERENCES } from '@/types/user'
+import type { Carrier, CarrierType, CarrierSort, SearchHit } from '@shared/types/carrier'
+import type { User, UserPreferences, Favorite, ReadingProgress } from '@shared/types/user'
+import type { TechTree, TechNode } from '@shared/types/techTree'
+import { DEFAULT_PREFERENCES } from '@shared/types/user'
 
 export const useLibraryStore = defineStore('library', () => {
   /* ---------- 数据状态 ---------- */

@@ -8,7 +8,7 @@
  * 页面只依赖这个接口，换解析实现不动阅读器代码。
  */
 
-import type { BookDoc } from '@/types/book'
+import type { BookDoc } from '@shared/types/book'
 
 export interface DocumentService {
   /** 取某本书的文档（不存在返回 null） */

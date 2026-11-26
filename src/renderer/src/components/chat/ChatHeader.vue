@@ -12,8 +12,8 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useChatStore } from '@/stores/chat'
-import { CHAT_MODES } from '@/types/chat'
-import type { ChatMode } from '@/types/chat'
+import { CHAT_MODES } from '@shared/types/chat'
+import type { ChatMode } from '@shared/types/chat'
 
 const store = useChatStore()
 const { mode, activeConversation } = storeToRefs(store)

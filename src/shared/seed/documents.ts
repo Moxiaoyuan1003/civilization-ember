@@ -8,7 +8,7 @@
  * 文字是手写的科普正文，够真实、够长，能验证翻页/目录/划线/进度。
  */
 
-import type { BookDoc } from '@/types/book'
+import type { BookDoc } from '@shared/types/book'
 
 /** 野外生存手册：三章 */
 const survivalDoc: BookDoc = {

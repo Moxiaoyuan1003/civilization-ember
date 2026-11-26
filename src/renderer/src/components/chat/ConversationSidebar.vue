@@ -13,8 +13,8 @@
 import { storeToRefs } from 'pinia'
 import { useChatStore } from '@/stores/chat'
 import { MessageSquareText, Plus, Trash2 } from 'lucide-vue-next'
-import { CHAT_MODES } from '@/types/chat'
-import type { Conversation } from '@/types/chat'
+import { CHAT_MODES } from '@shared/types/chat'
+import type { Conversation } from '@shared/types/chat'
 
 const store = useChatStore()
 const { conversations, activeConversationId } = storeToRefs(store)

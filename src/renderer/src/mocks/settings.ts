@@ -6,8 +6,8 @@
  */
 
 import type { SettingsService } from '@/services/settings'
-import type { AppSettings } from '@/types/settings'
-import { DEFAULT_APP_SETTINGS } from '@/types/settings'
+import type { AppSettings } from '@shared/types/settings'
+import { DEFAULT_APP_SETTINGS } from '@shared/types/settings'
 
 export function createMockSettings(): SettingsService {
   // 可变副本：保存后同一会话内生效

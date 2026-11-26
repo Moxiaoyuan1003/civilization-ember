@@ -7,8 +7,8 @@
  * 文件能不能解码），播放器组件一行都不用改。
  */
 
-import type { Carrier } from '@/types/carrier'
-import type { MediaSource } from '@/types/media'
+import type { Carrier } from '@shared/types/carrier'
+import type { MediaSource } from '@shared/types/media'
 
 /** 媒体来源解析：给一个音视频载体，回答"能不能播、怎么播、播不了怎么解释" */
 export interface MediaService {

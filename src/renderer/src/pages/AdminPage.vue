@@ -13,8 +13,8 @@
 import { onMounted } from 'vue'
 import { Loader2, RefreshCw, Inbox, AlertCircle } from 'lucide-vue-next'
 import { useAdminStore } from '@/stores/admin'
-import type { IngestStatus } from '@/types/ingest'
-import { INGEST_STATUS_LABELS } from '@/types/ingest'
+import type { IngestStatus } from '@shared/types/ingest'
+import { INGEST_STATUS_LABELS } from '@shared/types/ingest'
 import IngestTaskItem from '@/components/admin/IngestTaskItem.vue'
 import StoragePanel from '@/components/admin/StoragePanel.vue'
 

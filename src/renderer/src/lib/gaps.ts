@@ -9,7 +9,7 @@
  * 纯函数，不碰 DOM/图库，供技术树页与"策展补漏"AI 模式共用。
  */
 
-import type { TechTree, TechGap } from '@/types/techTree'
+import type { TechTree, TechGap } from '@shared/types/techTree'
 
 /**
  * 扫描整棵树，返回所有缺口。

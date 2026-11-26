@@ -4,7 +4,7 @@
  * 验证 AI 对话页的会话列表、消息流、出处跳转。
  */
 
-import type { Conversation, ChatMessage } from '@/types/chat'
+import type { Conversation, ChatMessage } from '@shared/types/chat'
 
 /** Mock 会话列表 */
 export const mockConversations: Conversation[] = [

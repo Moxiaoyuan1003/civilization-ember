@@ -12,9 +12,9 @@
 import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useServices } from '@/services'
-import type { Carrier, Transcript } from '@/types/carrier'
-import type { MediaSource } from '@/types/media'
-import type { User } from '@/types/user'
+import type { Carrier, Transcript } from '@shared/types/carrier'
+import type { MediaSource } from '@shared/types/media'
+import type { User } from '@shared/types/user'
 
 /** 播放速度档位 */
 export const PLAYBACK_RATES = [0.75, 1, 1.25, 1.5, 2] as const

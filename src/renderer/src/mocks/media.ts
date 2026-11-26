@@ -13,8 +13,8 @@
  * 「片子丢了、文字还在」是常态，不是异常。
  */
 
-import type { Carrier } from '@/types/carrier'
-import type { MediaSource } from '@/types/media'
+import type { Carrier } from '@shared/types/carrier'
+import type { MediaSource } from '@shared/types/media'
 import type { MediaService } from '@/services/media'
 
 /** 演示素材路径（相对 index.html，dev 与打包后都能取到） */

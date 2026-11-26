@@ -8,7 +8,7 @@
  */
 
 import { computed } from 'vue'
-import type { Carrier } from '@/types/carrier'
+import type { Carrier } from '@shared/types/carrier'
 import { carrierTypeMeta } from './carrierMeta'
 import { resolveCover } from '@/assets/covers'
 

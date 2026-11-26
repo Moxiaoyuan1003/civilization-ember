@@ -14,7 +14,7 @@ import { useDashboardStore } from '@/stores/dashboard'
 import { carrierTypeMeta } from '@/components/library/carrierMeta'
 import DashboardCard from './DashboardCard.vue'
 import { BookOpen, Play } from 'lucide-vue-next'
-import type { Carrier } from '@/types/carrier'
+import type { Carrier } from '@shared/types/carrier'
 
 const store = useDashboardStore()
 const router = useRouter()

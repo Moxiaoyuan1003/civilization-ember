@@ -10,7 +10,7 @@
 
 import { computed } from 'vue'
 import { Database, FileArchive, Layers, Sparkles, HardDrive } from 'lucide-vue-next'
-import type { StorageStats } from '@/types/ingest'
+import type { StorageStats } from '@shared/types/ingest'
 import { formatBytes } from '@/lib/format'
 
 const props = defineProps<{ stats: StorageStats | null }>()

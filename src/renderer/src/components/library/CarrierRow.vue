@@ -10,7 +10,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLibraryStore } from '@/stores/library'
-import type { Carrier } from '@/types/carrier'
+import type { Carrier } from '@shared/types/carrier'
 import { carrierTypeMeta } from './carrierMeta'
 import CarrierCover from './CarrierCover.vue'
 import { Star } from 'lucide-vue-next'

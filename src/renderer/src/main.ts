@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
-import { initMockServices } from './mocks'
+import { initServices } from './mocks'
 import './assets/main.css'
 import './assets/panels.css'
 
@@ -11,8 +11,8 @@ import './assets/panels.css'
  * 未来接入更多插件（如 i18n、持久化）都从这里统一装配。
  */
 
-// 注入服务容器（当前为 Mock 实现；后续换真实后端只改这一处）
-initMockServices()
+// 注入服务容器（存储层走主进程 SQLite；其余仍为 Mock，逐期替换）
+initServices()
 
 const app = createApp(App)
 

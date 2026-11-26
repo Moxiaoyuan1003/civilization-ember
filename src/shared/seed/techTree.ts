@@ -8,7 +8,7 @@
  * 用 prerequisiteChain() 能从"蒸汽机"一路回溯到"取火"。
  */
 
-import type { TechTree, TechNode, TechEdge } from '@/types/techTree'
+import type { TechTree, TechNode, TechEdge } from '@shared/types/techTree'
 
 /** Mock 技术树节点 */
 export const mockTechNodes: TechNode[] = [

@@ -13,7 +13,7 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTechTreeStore } from '@/stores/techTree'
-import type { TechNode } from '@/types/techTree'
+import type { TechNode } from '@shared/types/techTree'
 import { Layers, MessageCircleQuestion, CheckCircle2 } from 'lucide-vue-next'
 
 const props = defineProps<{ node: TechNode; x: number; y: number }>()

@@ -7,8 +7,8 @@
  */
 
 import { computed } from 'vue'
-import { layerOf } from '@/types/layer'
-import type { TechNode } from '@/types/techTree'
+import { layerOf } from '@shared/types/layer'
+import type { TechNode } from '@shared/types/techTree'
 
 const props = defineProps<{ node: TechNode; x: number; y: number }>()
 

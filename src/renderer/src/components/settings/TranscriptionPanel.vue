@@ -12,7 +12,7 @@
 import { computed } from 'vue'
 import { Gauge, Info, Cpu, Languages, Boxes } from 'lucide-vue-next'
 import { useSettingsStore } from '@/stores/settings'
-import { TRANSCRIPTION_ENGINES } from '@/types/settings'
+import { TRANSCRIPTION_ENGINES } from '@shared/types/settings'
 import SettingField from './SettingField.vue'
 
 const store = useSettingsStore()

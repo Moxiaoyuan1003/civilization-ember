@@ -1,10 +1,25 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
+import { registerStorageIpc } from './storage/ipc'
+import { closeStorage } from './storage/database'
+import { getDataPaths } from './storage/paths'
 
 /**
  * 主窗口引用（保持全局，避免被垃圾回收提前关闭窗口）
  */
 let mainWindow: BrowserWindow | null = null
+
+/**
+ * 固定应用名，进而固定 userData 目录（= 数据根目录的默认值）。
+ *
+ * 为什么显式设：Electron 默认从 package.json 的 name 推 app 名，
+ * 但只有在"以目录方式启动"时才读得到。开发时用 `electron out/main/index.js`
+ * 直接跑入口文件，就会退化成默认名 `Electron`，数据被写到
+ * `%APPDATA%\Electron\` —— 跟双击 exe 启动时的 `%APPDATA%\civilization-ember\`
+ * 变成两个不同的库，用户会以为"我的数据丢了"。
+ * 显式命名后，无论怎么启动，数据永远在同一个目录。
+ */
+app.setName('civilization-ember')
 
 /**
  * 创建应用主窗口
@@ -50,6 +65,18 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  // 存储层要先于窗口就绪：建库、迁移、首次播种都在这里完成。
+  // 失败时把错误写进日志并照常开窗——宁可界面能开、数据报错，
+  // 也不要因为库坏了整个应用打不开（用户至少还能导出/备份）。
+  try {
+    registerStorageIpc()
+    // eslint-disable-next-line no-console
+    console.log(`[storage] 数据目录：${getDataPaths().root}`)
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('[storage] 初始化失败，应用将以无持久化模式运行：', err)
+  }
+
   createWindow()
 
   // 自绘标题栏的窗口控制：最小化 / 最大化切换 / 关闭。
@@ -80,4 +107,9 @@ app.whenReady().then(() => {
 // 除 macOS 外，所有窗口关闭即退出
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
+})
+
+// 退出前关闭数据库连接：WASM 版不 close 会留下未落盘的写缓冲
+app.on('will-quit', () => {
+  closeStorage()
 })

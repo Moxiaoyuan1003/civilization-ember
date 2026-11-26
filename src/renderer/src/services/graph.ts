@@ -13,8 +13,8 @@
  * 引擎切换：设置页选"渲染引擎"，运行时走 createGraph(engine) 工厂。
  */
 
-import type { TechTree, TechNode } from '@/types/techTree'
-import type { NodePosition } from '@/types/layout'
+import type { TechTree, TechNode } from '@shared/types/techTree'
+import type { NodePosition } from '@shared/types/layout'
 import type { TechTreeColorScheme } from '@/lib/color'
 import { createG6Graph } from './graph/g6'
 

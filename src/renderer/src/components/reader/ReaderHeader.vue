@@ -9,7 +9,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useReaderStore } from '@/stores/reader'
-import type { ReadingMode } from '@/types/book'
+import type { ReadingMode } from '@shared/types/book'
 import {
   ArrowLeft,
   Minus,

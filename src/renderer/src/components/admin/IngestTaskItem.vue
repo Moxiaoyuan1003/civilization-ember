@@ -28,8 +28,8 @@ import {
   Clock,
   Loader2
 } from 'lucide-vue-next'
-import type { IngestTask, IngestStatus } from '@/types/ingest'
-import { INGEST_STAGE_LABELS, INGEST_STATUS_LABELS } from '@/types/ingest'
+import type { IngestTask, IngestStatus } from '@shared/types/ingest'
+import { INGEST_STAGE_LABELS, INGEST_STATUS_LABELS } from '@shared/types/ingest'
 import { formatPercent, formatRelativeTime } from '@/lib/format'
 import { useAdminStore } from '@/stores/admin'
 

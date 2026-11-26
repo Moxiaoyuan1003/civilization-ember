@@ -6,7 +6,7 @@
  */
 
 import type { TranscriptionService } from '@/services/transcription'
-import type { Transcript } from '@/types/carrier'
+import type { Transcript } from '@shared/types/carrier'
 import { mockTranscripts } from '@/mocks/data'
 
 export function createMockTranscription(): TranscriptionService {

@@ -17,9 +17,9 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useTechTreeStore } from '@/stores/techTree'
-import { layerOf } from '@/types/layer'
-import type { TechNode } from '@/types/techTree'
-import type { Citation } from '@/types/carrier'
+import { layerOf } from '@shared/types/layer'
+import type { TechNode } from '@shared/types/techTree'
+import type { Citation } from '@shared/types/carrier'
 import { X, BookOpen, MessageCircleQuestion, Layers, CheckCircle2, Circle } from 'lucide-vue-next'
 
 const props = defineProps<{ node: TechNode }>()

@@ -9,9 +9,9 @@
  */
 
 import type { StorageService } from '@/services/storage'
-import type { Carrier, CarrierFilter, CarrierSort, SearchHit, Transcript } from '@/types/carrier'
-import type { TechTree } from '@/types/techTree'
-import type { LayoutPreset } from '@/types/layout'
+import type { Carrier, CarrierFilter, CarrierSort, SearchHit, Transcript } from '@shared/types/carrier'
+import type { TechTree } from '@shared/types/techTree'
+import type { LayoutPreset } from '@shared/types/layout'
 import type {
   Annotation,
   Favorite,
@@ -19,10 +19,10 @@ import type {
   ReadingProgress,
   User,
   UserPreferences
-} from '@/types/user'
-import { DEFAULT_PREFERENCES } from '@/types/user'
-import type { Conversation, ChatMessage } from '@/types/chat'
-import type { Bookmark } from '@/types/book'
+} from '@shared/types/user'
+import { DEFAULT_PREFERENCES } from '@shared/types/user'
+import type { Conversation, ChatMessage } from '@shared/types/chat'
+import type { Bookmark } from '@shared/types/book'
 import {
   mockCarriers,
   mockTranscripts,

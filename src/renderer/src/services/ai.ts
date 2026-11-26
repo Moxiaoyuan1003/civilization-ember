@@ -7,7 +7,7 @@
  * - 核心功能（检索、看原书、查技术树）不经过这里，AI 只是增强层。
  */
 
-import type { AiContext, ChatMode, ChatMessage } from '@/types/chat'
+import type { AiContext, ChatMode, ChatMessage } from '@shared/types/chat'
 
 /**
  * AI 服务的流式回调：一次回答分多段推给 UI，实现"一个字一个字往外蹦"。
