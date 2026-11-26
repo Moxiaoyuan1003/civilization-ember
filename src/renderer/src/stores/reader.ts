@@ -45,6 +45,18 @@ function loadUiPref(): ReaderUiPref {
   return { fontSize: 17, mode: 'page' }
 }
 
+/**
+ * 这个格式最可能是"整页图片"吗。
+ *
+ * 用来把"解析失败"说得更具体：PDF 读不出正文，十有八九是扫描件，
+ * 而扫描件不是失败，是**还没接入文字识别**——这两句话对用户的意义完全不同，
+ * 一句让人想去重试，一句让人知道该等什么。
+ */
+function scannedLike(format?: string): boolean {
+  const f = (format ?? '').toLowerCase()
+  return f === 'pdf' || f === 'epub' || f === 'png' || f === 'jpg' || f === 'jpeg'
+}
+
 export const useReaderStore = defineStore('reader', () => {
   const services = useServices()
 
@@ -124,8 +136,18 @@ export const useReaderStore = defineStore('reader', () => {
         return
       }
       if (!d) {
-        // 书存在但还没解析出正文（真实系统里=没摄取过或解析失败）
-        error.value = '这本书还没有解析出可读正文（需要先完成摄取）'
+        // 书存在但没解析出正文。这里要分清两种完全不同的情况，
+        // 否则用户看到"需要先完成摄取"会去重试，而重试也救不了扫描件：
+        //
+        // ① 解析失败（carrier.status='failed'）= 机器尽力了但读不出来，
+        //    最常见的是扫描版 PDF 没有文字层，要等第 15 期的文字识别。
+        // ② 还没摄取完 = 排队中或刚导入，等一会儿就有。
+        error.value =
+          c.status === 'failed'
+            ? scannedLike(c.format)
+              ? '这本是图片型 PDF（整页没有文字层），需要文字识别才能读——第 15 期接入。原文件已安全存在库里，不会丢。'
+              : '这本书解析失败了。原文件已安全存在库里，等解析器补齐后可以重试。'
+            : '这本书还没有解析出可读正文（摄取可能还在排队，稍等或去管理页看进度）'
         return
       }
 

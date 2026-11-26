@@ -52,9 +52,12 @@ function setMode(m: ReadingMode): void {
       </div>
     </div>
 
-    <!-- 中：进度 -->
+    <!-- 中：进度。没解析出正文时不显示"1 / 0"这种没有意义的数字 -->
     <div class="rhead__center">
-      <span class="rhead__progress">{{ store.currentPage }} / {{ store.totalPages }}</span>
+      <span v-if="store.totalPages > 0" class="rhead__progress">
+        {{ store.currentPage }} / {{ store.totalPages }}
+      </span>
+      <span v-else class="rhead__progress">—</span>
     </div>
 
     <!-- 右：字号 / 模式 / 书签 / 笔记 -->

@@ -17,8 +17,8 @@ import type { BookDoc, DocPage, TocItem } from '@shared/types/book'
 /** 一页大约多少字 */
 const CHARS_PER_PAGE = 1200
 
-/** 判断一行是不是章节标题 */
-function isHeading(line: string): boolean {
+/** 判断一行是不是章节标题（PDF/EPUB 解析器也要用，所以导出） */
+export function isHeading(line: string): boolean {
   const t = line.trim()
   if (!t) return false
   // Markdown 标题
@@ -31,8 +31,8 @@ function isHeading(line: string): boolean {
   return false
 }
 
-/** 去掉 Markdown 的井号前缀，留干净标题 */
-function cleanHeading(line: string): string {
+/** 去掉 Markdown 的井号前缀，留干净标题（导出给 PDF/EPUB 解析器复用） */
+export function cleanHeading(line: string): string {
   return line.trim().replace(/^#{1,3}\s+/, '')
 }
 

@@ -26,13 +26,15 @@ import { IngestRepo, nextStageOf, stagesForType } from '../storage/ingestRepo'
 import { DocumentRepo } from '../storage/documents'
 import { objectFilePath } from '../storage/objects'
 import { paginateText } from './paginate'
+import { extractPdf } from './pdf'
+import { extractEpub } from './epub'
 import { readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 
-/** 各阶段是否已实现（第 9 期的真实能力边界就写在这张表里） */
+/** 各阶段是否已实现（能力边界就写在这张表里） */
 const STAGE_IMPLEMENTED: Record<IngestStage, boolean> = {
   queued: true,
-  parsing: true, // 纯文本 / Markdown / 网页正文可以真解析；PDF/EPUB 内部再判
+  parsing: true, // 第 10 期：TXT/MD/PDF/EPUB/网页全支持
   ocr: false, // 第 15 期
   transcribing: false, // 第 13 期
   indexing: true, // 正文驱动的关键词索引（第 12 期升级为倒排 + BM25）
@@ -181,13 +183,13 @@ export class IngestRunner {
         await delay(STEP_DELAY_MS)
         const doc = this.docs.get(task.carrierId)
         if (!doc) {
-          // 没有正文可索引（PDF/EPUB/音视频还没解析器）→ 不报错，标跳过
+          // 没有正文可索引（音视频还没转写、图片还没 OCR）→ 不报错，标跳过
           const cur = this.repo.get(id)
           if (cur) {
             const skipped: IngestStage[] = [...new Set<IngestStage>([...cur.skippedStages, 'indexing'])]
             this.patch(id, {
               skippedStages: skipped,
-              note: '暂无可索引的正文（该格式的解析器在第 10 期接入）'
+              note: '暂无可索引的正文（音视频要等第 13 期转写、图片要等第 15 期文字识别）'
             })
           }
         }
@@ -210,9 +212,15 @@ export class IngestRunner {
   /**
    * 真解析：把载体对应的原文件读出来切页。
    *
-   * 第 9 期支持：纯文本 / Markdown / 网页（正文已存库）。
-   * PDF/EPUB 会在这里明确抛"暂不支持"，让任务标失败而不是静默假成功——
-   * 用户点开书看到空白比看到"解析失败：PDF 解析器将在第 10 期接入"更糟。
+   * 第 10 期已支持：
+   * - 纯文本 / Markdown → 按字数装箱
+   * - PDF → 逐页抽文字（扫描版如实报需要 OCR）
+   * - EPUB → 按 spine 顺序逐章抽正文
+   * - 网页 → 抓取时已解析，这里只确认
+   *
+   * 尚未支持的格式（音视频转写、图片 OCR）会明确抛错，
+   * 让任务标失败而不是静默假成功——用户点开书看到空白，
+   * 比看到"解析失败：这个格式还没接入"更糟。
    */
   private async doParse(task: IngestTask, onProgress: (p: number) => void): Promise<void> {
     const row = this.db.get(`SELECT * FROM carriers WHERE id = ?`, [task.carrierId]) as
@@ -229,24 +237,76 @@ export class IngestRunner {
       return
     }
 
-    // 纯文本类：读对象仓里的原文件
-    const isText = format === 'txt' || format === 'md' || format === 'markdown' || format === 'text'
-    if (!isText) {
-      throw new Error(
-        `暂不支持解析 ${format || '该'} 格式：PDF/EPUB 解析器在第 10 期接入（原文件已安全入库存好，不会丢）`
-      )
-    }
     if (!objectHash) throw new Error('这个载体没有原文件（演示数据），无法解析')
-
     const filePath = objectFilePath(objectHash)
     if (!filePath || !existsSync(filePath)) throw new Error('原文件在对象仓里找不到了')
 
-    onProgress(0.3)
-    const raw = await readFile(filePath, 'utf8')
-    onProgress(0.6)
-    const doc = paginateText(task.carrierId, raw, task.carrierTitle)
-    this.docs.save(doc)
-    onProgress(1)
+    /* ---- 纯文本类 ---- */
+    const isText = format === 'txt' || format === 'md' || format === 'markdown' || format === 'text'
+    if (isText) {
+      onProgress(0.3)
+      const raw = await readFile(filePath, 'utf8')
+      onProgress(0.6)
+      const doc = paginateText(task.carrierId, raw, task.carrierTitle)
+      this.docs.save(doc)
+      this.noteParsed(task.carrierId, doc.pages.length, 0)
+      onProgress(1)
+      return
+    }
+
+    /* ---- PDF ---- */
+    if (format === 'pdf') {
+      const result = await extractPdf(task.carrierId, filePath, task.carrierTitle, (r) =>
+        onProgress(0.1 + r * 0.85)
+      )
+      if (!result.doc) {
+        // 整本都是扫描页：如实报"需要 OCR"，别给用户一本白页书
+        throw new Error(
+          `这是一本扫描版 PDF（${result.totalPages} 页里 ${result.scannedPages} 页没有文字层）：需要文字识别才能读，第 15 期接入`
+        )
+      }
+      this.docs.save(result.doc)
+      this.noteParsed(task.carrierId, result.doc.pages.length, result.scannedPages)
+      onProgress(1)
+      return
+    }
+
+    /* ---- EPUB ---- */
+    if (format === 'epub') {
+      const result = await extractEpub(task.carrierId, filePath, task.carrierTitle, (r) =>
+        onProgress(0.1 + r * 0.85)
+      )
+      if (!result.doc) {
+        throw new Error(result.reason ?? '这本 EPUB 里没有可读的文字')
+      }
+      this.docs.save(result.doc)
+      this.noteParsed(task.carrierId, result.doc.pages.length, 0)
+      onProgress(1)
+      return
+    }
+
+    /* ---- 还没接入的格式，如实报错 ---- */
+    throw new Error(
+      `暂不支持解析 ${format || '该'} 格式：${
+        task.carrierType === 'video' || task.carrierType === 'audio'
+          ? '音视频转写在第 13 期接入'
+          : '图片文字识别在第 15 期接入'
+      }（原文件已安全入库存好，不会丢）`
+    )
+  }
+
+  /** 把解析结果的规模写进 carriers.description，图书馆列表能直接看出来 */
+  private noteParsed(carrierId: string, pageCount: number, scannedPages: number): void {
+    try {
+      const note =
+        scannedPages > 0
+          ? `已解析 ${pageCount} 页（其中 ${scannedPages} 页是扫描图，暂未识别）`
+          : `已解析 ${pageCount} 页`
+      this.db.run(`UPDATE carriers SET description = ? WHERE id = ?`, [note, carrierId])
+    } catch (err) {
+      // 写说明失败不该让解析本身判失败：正文已经在 documents 表里了
+      console.error('[ingest] 写解析说明失败：', err)
+    }
   }
 
   /** 更新任务字段（自动刷 updatedAt） */
